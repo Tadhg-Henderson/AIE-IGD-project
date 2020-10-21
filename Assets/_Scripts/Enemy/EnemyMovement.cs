@@ -8,25 +8,26 @@ public class EnemyMovement : MonoBehaviour
     [SerializeField] private float defaultMovementSpeed = 5;
     [SerializeField] private float angeredMovementSpeed = 7;
     [SerializeField] private float slowedMovementSpeed = 3;
-    [SerializeField] private float KillRange;
+    
     
     public bool playerFound;
+    
     public Transform lastKnownLocation;
     public Transform player;
-    public SphereCollider killArea;
     public EnemyPlayerDetection detection;
     public Transform[] waypoints;
     public Flashlight lighthit;
     public Animator animator;
-
     private NavMeshAgent agent;
     private int destPoint = 0;
+    private SphereCollider killSphere;
 
     // Start is called before the first frame update
     void Start()
     {
-        killArea.radius = 0f;
+        
         agent = gameObject.GetComponent<NavMeshAgent>();
+        killSphere = gameObject.GetComponent<SphereCollider>();
     }
 
     // Update is called once per frame
@@ -61,16 +62,23 @@ public class EnemyMovement : MonoBehaviour
     }
     private void PlayerFoundMovement()
     {
+        
         agent.speed = angeredMovementSpeed;
-        animator.SetBool("IsAngerdRunning", true);
+        animator.SetBool("IsWalking", false);
+        animator.SetBool("isStunned", false);
         agent.SetDestination(lastKnownLocation.position);
+        killSphere.radius = 1.0f;
     }
     private void NormalMovement()
     {
+        
         agent.speed = defaultMovementSpeed;
         agent.autoBraking = false;
-        animator.SetBool("IsAngerdRunning", false);
-        
+        animator.SetBool("IsWalking", true);
+        animator.SetBool("isStunned", false);
+        killSphere.radius = 1.0f;
+
+
         if (!agent.pathPending && agent.remainingDistance < 0.5f)
             NextPoint();
     }
@@ -86,6 +94,8 @@ public class EnemyMovement : MonoBehaviour
     }
     private void StunnedMovement()
     {
-        lastKnownLocation.position = player.position;
+        animator.SetBool("isStunned", true);
+        agent.speed = 0;
+        killSphere.radius = 0f;
     }
 }

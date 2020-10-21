@@ -4,10 +4,13 @@ using UnityEngine;
 
 public class LeverTrigger : MonoBehaviour
 {
+    [SerializeField] public Color color;
     public bool isTriggerd;
     public bool playerInBounds;
     Animator animator;
     SphereCollider triggerRange;
+    public Light airlockLight;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -23,6 +26,7 @@ public class LeverTrigger : MonoBehaviour
         if (playerInBounds && Input.GetKeyDown(KeyCode.E))
         {
             isTriggerd = true;
+            airlockLight.color = color;
             animator.SetBool("isTriggered", true);
         }
 

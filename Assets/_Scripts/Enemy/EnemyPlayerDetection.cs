@@ -14,10 +14,17 @@ public class EnemyPlayerDetection : MonoBehaviour
     public Transform head;
     public Transform lastKnownPosition;
     public Transform player;
+    public Flashlight lightHit;
 
 
     private void Update()
     {
+        if (lightHit.hittingEnemy)
+        {
+            head.LookAt(lastKnownPosition);
+            lastKnownPosition.position = player.position;
+            castRay = true;
+        }
         HearingCheck();
         VisCheck();
     }
@@ -31,6 +38,7 @@ public class EnemyPlayerDetection : MonoBehaviour
             {
                 head.LookAt(lastKnownPosition);
                 lastKnownPosition.position = player.position;
+                castRay = true;
             }
        } 
        if (hearing.PlayerNoiseDetected.Equals(false))
@@ -51,7 +59,7 @@ public class EnemyPlayerDetection : MonoBehaviour
                     head.LookAt(lastKnownPosition);
                     castRay = true;
                     isSeen = true;
-                    Debug.DrawRay(head.position, head.forward, Color.green);
+                    Debug.DrawRay(head.position, head.forward, Color.green, Mathf.Infinity);
                 } else
                 {
                     castRay = false;

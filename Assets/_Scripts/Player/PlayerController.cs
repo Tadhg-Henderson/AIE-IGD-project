@@ -18,8 +18,11 @@ public class PlayerController : MonoBehaviour
     public bool isCrouching;
     public bool isStill;
 
+
     private float YVelocity;
+    private bool cursorLock = true;
     private CharacterController controller;
+    private Stamina stamina;
     private float currentSpeed;
     private float maxRot = 0f;
     private Vector2 currentDirection = Vector2.zero;
@@ -29,9 +32,10 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         controller = GetComponent<CharacterController>();
+        stamina = GetComponent<Stamina>();
         currentSpeed = walkSpeed;
         
-        Cursor.lockState = CursorLockMode.Locked;
+        
     }
 
     // Update is called once per frame
@@ -40,11 +44,14 @@ public class PlayerController : MonoBehaviour
         MovementSpeedInput();
         MouseUpdate();
         MovementUpdate();
-
+        CursorLock();
         
         currentSpeed = walkSpeed;
         
-            
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            cursorLock = !cursorLock;
+        }    
         
     }
     private void MovementUpdate()
@@ -80,7 +87,7 @@ public class PlayerController : MonoBehaviour
             currentSpeed = crouchSpeed;
             isCrouching = true;
         } else { isCrouching = false; }
-        if (Input.GetKey(sprintKey) && !isCrouching && Input.GetKey(KeyCode.W))
+        if (Input.GetKey(sprintKey) && !isCrouching && stamina.canSprint && !isStill)
         {
             currentSpeed = sprintSpeed;
             isSprinting = true;
@@ -89,5 +96,15 @@ public class PlayerController : MonoBehaviour
         {
             isStill = false;
         } else { isStill = true; }
+    }
+    private void CursorLock()
+    {
+        if (cursorLock)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+        } else if (!cursorLock)
+        {
+            Cursor.lockState = CursorLockMode.Confined;
+        }
     }
 }
